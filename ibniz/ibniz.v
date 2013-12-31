@@ -15,6 +15,7 @@ parameter RES_Y_L= 480;
 parameter XY_STEP_L= 8;
 
 parameter ENABLE_HEAVIES= 1;
+parameter SCENE_COMPILED= -1;//by default all compiled, change if short on LE's
 
 input clk;
 input rst;
@@ -52,7 +53,7 @@ assign Y_in= y<<<(high_res ? XY_STEP_H :XY_STEP_L );
 wire [31:0] V_out [0:7];
 
 
-assign V_out2 = //1? V_out[7] : 
+assign V_out2 = SCENE_COMPILED>=0 ? V_out[SCENE_COMPILED] : 
 					tumblers[0] ? 
 					(tumblers[1] ? 
 						(tumblers[2] ? V_out[7] : V_out[3]) : 
@@ -60,14 +61,14 @@ assign V_out2 = //1? V_out[7] :
 					((tumblers[1]&&ENABLE_HEAVIES==1) ? 
 						( tumblers[2] ? V_out[6] : V_out[2]) : 
 						(tumblers[2] ? V_out[4] : V_out[0]) );
-Ibniz_generator1 ig0( clk, rst, tumblers[2:0]==0, T_in, X_in, Y_in, V_out[0] );
-Ibniz_generator4 ig1( clk, rst, tumblers[2:0]==1, T_in, X_in, Y_in, V_out[1] );
-Ibniz_generator2 ig2( clk, rst, tumblers[2:0]==2, T_in, X_in, Y_in, V_out[2] );
-Ibniz_generator3 ig3( clk, rst, tumblers[2:0]==3, T_in, X_in, Y_in, V_out[3] );
-Ibniz_generator6 ig4( clk, rst, tumblers[2:0]==4, T_in, X_in, Y_in, V_out[4] );
-Ibniz_generator5 ig5( clk, rst, tumblers[2:0]==5, T_in, X_in, Y_in, V_out[5] );
-Ibniz_generator7 ig6( clk, rst, tumblers[2:0]==6, T_in, X_in, Y_in, V_out[6] );
-Ibniz_generator0 ig7( clk, rst, tumblers[2:0]==7, T_in, X_in, Y_in, V_out[7] );
+Ibniz_generator1 ig0( clk, rst, tumblers[2:0]==0 || SCENE_COMPILED>=0, T_in, X_in, Y_in, V_out[0] );
+Ibniz_generator4 ig1( clk, rst, tumblers[2:0]==1 || SCENE_COMPILED>=0, T_in, X_in, Y_in, V_out[1] );
+Ibniz_generator2 ig2( clk, rst, tumblers[2:0]==2 || SCENE_COMPILED>=0, T_in, X_in, Y_in, V_out[2] );
+Ibniz_generator3 ig3( clk, rst, tumblers[2:0]==3 || SCENE_COMPILED>=0, T_in, X_in, Y_in, V_out[3] );
+Ibniz_generator6 ig4( clk, rst, tumblers[2:0]==4 || SCENE_COMPILED>=0, T_in, X_in, Y_in, V_out[4] );
+Ibniz_generator5 ig5( clk, rst, tumblers[2:0]==5 || SCENE_COMPILED>=0, T_in, X_in, Y_in, V_out[5] );
+Ibniz_generator7 ig6( clk, rst, tumblers[2:0]==6 || SCENE_COMPILED>=0, T_in, X_in, Y_in, V_out[6] );
+Ibniz_generator0 ig7( clk, rst, tumblers[2:0]==7 || SCENE_COMPILED>=0, T_in, X_in, Y_in, V_out[7] );
 
 wire signed [15:0] bright= V_out2[15:8];
 wire signed [7:0] hue2= V_out2[23:16];
